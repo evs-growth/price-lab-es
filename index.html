@@ -886,36 +886,36 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 </script>
 </body>
-   <script>
+<script>
   function sendHeight() {
-    // We measure the #root div which contains the whole app
-    const rootElement = document.getElementById('root');
-    if (rootElement) {
-      const height = rootElement.scrollHeight;
-      // This sends the height to whatever page is hosting the iframe
+    // We target the root container specifically
+    const root = document.getElementById('root');
+    if (root) {
+      // Get the exact height of the content
+      const height = root.getBoundingClientRect().height;
+      // Send a very specific message
       window.parent.postMessage({ 
-        frameHeight: height,
-        source: 'booksy-price-lab' 
+        type: 'setHeight', 
+        value: height 
       }, '*');
     }
   }
 
-  // 1. Send height when everything is finished loading
+  // Optimized listeners
   window.addEventListener('load', sendHeight);
-
-  // 2. Send height when the window is resized (desktop to mobile)
-  window.addEventListener('resize', sendHeight);
-
-  // 3. Send height whenever the user clicks something
-  // (Crucial for when tabs change or lists get longer)
-  window.addEventListener('click', () => {
-    // We use a tiny delay so React has time to render the new items
-    setTimeout(sendHeight, 150);
+  // Use a ResizeObserver - this is the "modern" way to handle height changes
+  const resizeObserver = new ResizeObserver(entries => {
+    sendHeight();
   });
+  
+  if (document.getElementById('root')) {
+    resizeObserver.observe(document.getElementById('root'));
+  }
 
-  // 4. Safety backup: Check every 2 seconds
-  setInterval(sendHeight, 2000);
+  // Fallback for tab clicks
+  window.addEventListener('click', () => setTimeout(sendHeight, 50));
 </script>
 </html>
+
 
 
