@@ -419,18 +419,24 @@ return (
 
 
 const NextTabButton = ({ target, label = "Next Step" }) => (
-<div className="mt-12 flex justify-center border-t border-brand-gray pt-8">
-<button
-onClick={() => {
-setActiveTab(target);
-// This scrolls to the absolute 0,0 coordinate of the page
-window.scrollTo({ top: 0, behavior: 'smooth' });
-}}
-className="bg-brand-main text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl hover:bg-brand-black transition-all transform active:scale-95 flex items-center gap-3 group"
->
-{label} <Icon name="arrow-right" size={18} className="group-hover:translate-x-1 transition-transform" />
-</button>
-</div>
+  <div className="mt-12 flex justify-center border-t border-brand-gray pt-8">
+    <button
+      onClick={() => {
+        setActiveTab(target);
+        // This targets the outermost div of your app
+        const topElement = document.getElementById('top-of-app');
+        if (topElement) {
+          topElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' // Forces it to the very top of the screen
+          });
+        }
+      }}
+      className="bg-brand-main text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl hover:bg-brand-black transition-all transform active:scale-95 flex items-center gap-3 group"
+    >
+      {label} <Icon name="arrow-right" size={18} className="group-hover:translate-x-1 transition-transform" />
+    </button>
+  </div>
 );
 
 
@@ -894,6 +900,7 @@ root.render(<App />);
 </script>
 </body>
 </html>
+
 
 
 
