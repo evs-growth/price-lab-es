@@ -1,4 +1,62 @@
-<script type="text/babel">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booksy Price Lab - Pro Simplified</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #2A2C32; }
+        .editable-input { 
+            background: white; 
+            border: 2px solid #E2E8F0; 
+            border-radius: 12px; 
+            padding: 8px 12px; 
+            transition: all 0.2s; 
+            font-weight: 600;
+        }
+        .editable-input:focus { border-color: #0BA3AD; outline: none; box-shadow: 0 0 0 3px rgba(11, 163, 173, 0.1); }
+        .tab-active { background-color: #0BA3AD; color: white; box-shadow: 0 10px 15px -3px rgba(11, 163, 173, 0.3); }
+        .animate-fade-up { animation: fadeUp 0.3s ease-out; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal-overlay {
+            background-color: rgba(42, 44, 50, 0.7);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.2s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #0BA3AD; border-radius: 10px; }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { main: '#0BA3AD', gray: '#F1F5F9', black: '#2A2C32', lime: '#E2FD96', coral: '#F9C9C4' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
         const { useState, useMemo, useEffect, useRef } = React;
 
         const Icon = ({ name, size = 18, className = "" }) => {
@@ -51,8 +109,18 @@
                         <h3 className="text-2xl font-black text-brand-black uppercase tracking-tight mb-2">Service Saved!</h3>
                         <p className="text-slate-500 text-sm mb-8">This service has been calculated and added to your Price Menu.</p>
                         <div className="space-y-3">
-                            <button onClick={onClose} className="w-full bg-brand-black text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-slate-800 transition-colors">Add More Services</button>
-                            <button onClick={onGoToMenu} className="w-full bg-brand-main text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-brand-black transition-colors">Go See Menu</button>
+                            <button 
+                                onClick={onClose}
+                                className="w-full bg-brand-black text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-slate-800 transition-colors"
+                            >
+                                Add More Services
+                            </button>
+                            <button 
+                                onClick={onGoToMenu}
+                                className="w-full bg-brand-main text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-brand-black transition-colors"
+                            >
+                                Go See Menu
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -60,27 +128,17 @@
         };
 
         const App = () => {
-            // Helper to load data from browser memory
-            const getSaved = (key, fallback) => {
-                const saved = localStorage.getItem(key);
-                try {
-                    return saved ? JSON.parse(saved) : fallback;
-                } catch (e) {
-                    return fallback;
-                }
-            };
-
             const [activeTab, setActiveTab] = useState('goal');
-            const [weeklyHours, setWeeklyHours] = useState(getSaved('weeklyHours', 30));
-            const [targetProfit, setTargetProfit] = useState(getSaved('targetProfit', 45));
-            const [monthlyBills, setMonthlyBills] = useState(getSaved('monthlyBills', [
+            const [weeklyHours, setWeeklyHours] = useState(30);
+            const [targetProfit, setTargetProfit] = useState(45);
+            const [monthlyBills, setMonthlyBills] = useState([
                 { id: 1, name: 'Rent / Chair Fee', amount: 600 },
                 { id: 2, name: 'Booksy Subscription', amount: 30 },
                 { id: 3, name: 'Marketing & Insurance', amount: 80 }
-            ]));
-            const [inventory, setInventory] = useState(getSaved('inventory', INITIAL_INVENTORY));
-            const [savedServices, setSavedServices] = useState(getSaved('savedServices', []));
+            ]);
+            const [inventory, setInventory] = useState(INITIAL_INVENTORY);
             const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
+            
             const [service, setService] = useState({
                 name: 'Standard Service',
                 duration: 45,
@@ -90,33 +148,29 @@
                     { id: 'd1', amount: 1 }
                 ]
             });
+            const [savedServices, setSavedServices] = useState([]);
+// --- IFRAME RESIZE CODE ---
+        useEffect(() => {
+            const sendHeight = () => {
+                const height = document.documentElement.scrollHeight;
+                window.parent.postMessage({ 'type': 'iframe-resize', 'height': height }, "*");
+            };
 
-            // --- AUTO-SAVE TO LOCALSTORAGE ---
-            useEffect(() => {
-                localStorage.setItem('weeklyHours', JSON.stringify(weeklyHours));
-                localStorage.setItem('targetProfit', JSON.stringify(targetProfit));
-                localStorage.setItem('monthlyBills', JSON.stringify(monthlyBills));
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                localStorage.setItem('savedServices', JSON.stringify(savedServices));
-            }, [weeklyHours, targetProfit, monthlyBills, inventory, savedServices]);
-
-            // --- IFRAME RESIZE CODE ---
-            useEffect(() => {
-                const sendHeight = () => {
-                    const height = document.documentElement.scrollHeight;
-                    window.parent.postMessage({ 'type': 'iframe-resize', 'height': height }, "*");
-                };
-                const observer = new ResizeObserver(() => sendHeight());
-                observer.observe(document.body);
+            const observer = new ResizeObserver(() => {
                 sendHeight();
-                return () => observer.disconnect();
-            }, [activeTab, weeklyHours, targetProfit, monthlyBills, inventory, service, savedServices]);
+            });
+
+            observer.observe(document.body);
+            sendHeight();
+            return () => observer.disconnect();
+        }, [activeTab, weeklyHours, targetProfit, monthlyBills, inventory, service, savedServices]);
 
             // --- SCROLL TO TOP ON TAB CHANGE ---
-            useEffect(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, [activeTab]);
-
+useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}, [activeTab]);
+// -----------------------------------
+        // ---------------------------
             const totalBills = monthlyBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
             const monthlyWorkHours = (Number(weeklyHours) || 1) * 4.33;
             const billCostPerHour = totalBills / (monthlyWorkHours || 1);
@@ -173,7 +227,10 @@
             };
 
             const NavItem = ({ id, label, icon }) => (
-                <button onClick={() => setActiveTab(id)} className={`flex-1 min-w-[120px] p-4 rounded-2xl flex flex-col items-center gap-1 transition-all ${activeTab === id ? 'tab-active' : 'bg-white text-slate-400 hover:bg-slate-50 border border-slate-100'}`}>
+                <button 
+                    onClick={() => setActiveTab(id)}
+                    className={`flex-1 min-w-[120px] p-4 rounded-2xl flex flex-col items-center gap-1 transition-all ${activeTab === id ? 'tab-active' : 'bg-white text-slate-400 hover:bg-slate-50 border border-slate-100'}`}
+                >
                     <div className="flex items-center gap-2">
                         <Icon name={icon} size={16} />
                         <span className="font-bold text-xs uppercase">{label}</span>
@@ -183,7 +240,10 @@
 
             const NextButton = ({ target, label = "Continue" }) => (
                 <div className="mt-12 flex justify-end">
-                    <button onClick={() => setActiveTab(target)} className="bg-brand-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center gap-3 hover:bg-brand-main transition-colors shadow-lg group">
+                    <button 
+                        onClick={() => setActiveTab(target)}
+                        className="bg-brand-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center gap-3 hover:bg-brand-main transition-colors shadow-lg group"
+                    >
                         {label} <Icon name="arrow-right" size={16} className="group-hover:translate-x-1 transition-transform" />
                     </button>
                 </div>
@@ -191,7 +251,12 @@
 
             return (
                 <div className="min-h-screen pt-4">
-                    <Modal isOpen={isSavedModalOpen} onClose={() => setIsSavedModalOpen(false)} onGoToMenu={() => { setIsSavedModalOpen(false); setActiveTab('menu'); }} />
+                    <Modal 
+                        isOpen={isSavedModalOpen} 
+                        onClose={() => setIsSavedModalOpen(false)} 
+                        onGoToMenu={() => { setIsSavedModalOpen(false); setActiveTab('menu'); }} 
+                    />
+
                     <nav className="max-w-5xl mx-auto p-4 flex gap-2 overflow-x-auto no-scrollbar">
                         <NavItem id="goal" label="1. Goals" icon="target" />
                         <NavItem id="inventory" label="2. Stockroom" icon="package" />
@@ -234,7 +299,12 @@
                                                         <span className="absolute left-3 top-2 text-xs text-slate-400">$</span>
                                                         <input type="number" value={bill.amount} onChange={e => setMonthlyBills(monthlyBills.map(b => b.id === bill.id ? {...b, amount: e.target.value === '' ? '' : Number(e.target.value)} : b))} className="editable-input w-full pl-6 text-sm text-right" />
                                                     </div>
-                                                    <button onClick={() => setMonthlyBills(monthlyBills.filter(b => b.id !== bill.id))} className="text-slate-300 hover:text-red-500 p-2 transition-colors shrink-0"><Icon name="trash-2" size={16} /></button>
+                                                    <button 
+                                                        onClick={() => setMonthlyBills(monthlyBills.filter(b => b.id !== bill.id))}
+                                                        className="text-slate-300 hover:text-red-500 p-2 transition-colors shrink-0"
+                                                    >
+                                                        <Icon name="trash-2" size={16} />
+                                                    </button>
                                                 </div>
                                             ))}
                                         </div>
@@ -324,60 +394,105 @@
                                             </div>
                                         </div>
                                     </div>
+
                                     <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
                                         <h3 className="text-lg font-black uppercase tracking-tight mb-4">Step A: Selection</h3>
+                                        <p className="text-xs text-slate-400 mb-6 italic">Pick the products used from your Stockroom.</p>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-10">
                                             {[...inventory.liquids, ...inventory.disposables].map(item => {
                                                 const selected = service.selections.some(s => s.id === item.id);
                                                 return (
-                                                    <button key={item.id} onClick={() => toggleSelection(item.id)} className={`p-4 rounded-2xl border-2 text-left transition-all ${selected ? 'border-brand-main bg-brand-main/5 text-brand-main' : 'border-slate-100 bg-slate-50 text-slate-500'}`}>
+                                                    <button 
+                                                        key={item.id}
+                                                        onClick={() => toggleSelection(item.id)}
+                                                        className={`p-4 rounded-2xl border-2 text-left transition-all ${selected ? 'border-brand-main bg-brand-main/5 text-brand-main' : 'border-slate-100 bg-slate-50 text-slate-500'}`}
+                                                    >
                                                         <p className="text-[11px] font-black uppercase leading-tight">{item.name}</p>
                                                     </button>
                                                 );
                                             })}
                                         </div>
+
                                         <h3 className="text-lg font-black uppercase tracking-tight mb-4">Step B: Service Usage</h3>
                                         <div className="space-y-3">
-                                            {service.selections.length === 0 ? <p className="text-sm text-slate-400 italic">Select items above.</p> : service.selections.map(sel => {
-                                                const item = [...inventory.liquids, ...inventory.disposables].find(i => i.id === sel.id);
-                                                if (!item) return null;
-                                                const unit = 'capacity' in item ? 'ml' : 'pcs';
-                                                return (
-                                                    <div key={sel.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                                        <span className="text-sm font-bold text-brand-black">{item.name}</span>
-                                                        <div className="flex items-center gap-2">
-                                                            <input type="number" value={sel.amount} onChange={e => updateSelectionAmount(sel.id, e.target.value)} className="editable-input w-24 text-center text-sm" />
-                                                            <span className="text-[10px] font-black uppercase text-slate-400">{unit}</span>
+                                            {service.selections.length === 0 ? (
+                                                <p className="text-sm text-slate-400 italic">Select items above to set usage for this specific service.</p>
+                                            ) : (
+                                                service.selections.map(sel => {
+                                                    const item = [...inventory.liquids, ...inventory.disposables].find(i => i.id === sel.id);
+                                                    if (!item) return null;
+                                                    const unit = 'capacity' in item ? 'ml' : 'pcs';
+                                                    return (
+                                                        <div key={sel.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                                            <span className="text-sm font-bold text-brand-black">{item.name}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <input 
+                                                                    type="number" 
+                                                                    value={sel.amount} 
+                                                                    onChange={e => updateSelectionAmount(sel.id, e.target.value)} 
+                                                                    className="editable-input w-24 text-center text-sm" 
+                                                                />
+                                                                <span className="text-[10px] font-black uppercase text-slate-400 min-w-[30px]">{unit}</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            })}
+                                                    );
+                                                })
+                                            )}
                                         </div>
                                     </div>
+
                                     <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
                                         <h3 className="text-lg font-black uppercase tracking-tight mb-4">Step C: Finalize</h3>
+                                        <p className="text-sm text-slate-500 mb-6">Review your calculated benchmark and save it to your master price list.</p>
                                         <div className="flex items-center gap-6 p-6 bg-brand-gray/50 rounded-3xl border border-slate-100">
                                             <div className="flex-1">
                                                 <p className="text-[10px] font-black text-brand-main uppercase tracking-widest">Suggested Service Price</p>
                                                 <p className="text-4xl font-black text-brand-black">${Math.ceil(currentPrice.total)}</p>
                                             </div>
-                                            <button onClick={saveService} disabled={!service.name || !service.duration} className="bg-brand-main hover:bg-brand-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all disabled:opacity-30 flex items-center gap-2">
+                                            <button 
+                                                onClick={saveService}
+                                                disabled={!service.name || !service.duration}
+                                                className="bg-brand-main hover:bg-brand-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all disabled:opacity-30 flex items-center gap-2"
+                                            >
                                                 <Icon name="plus-circle" size={16} /> Add to Price Menu
                                             </button>
                                         </div>
                                     </div>
+                                    
+                                    <div className="mt-8 pt-4 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
+                                        <p className="text-xs font-medium italic">Already finished? View your full results.</p>
+                                        <button 
+                                            onClick={() => setActiveTab('menu')}
+                                            className="text-brand-main font-black uppercase text-xs tracking-widest flex items-center gap-2"
+                                        >
+                                            Go to Price Menu <Icon name="arrow-right" size={14} />
+                                        </button>
+                                    </div>
                                 </div>
+
                                 <div className="lg:col-span-1">
                                     <div className="bg-brand-black text-white rounded-[40px] p-8 sticky top-4 shadow-2xl overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-brand-main/20 rounded-full -mr-16 -mt-16 blur-3xl"></div>
                                         <div className="relative">
                                             <p className="text-[10px] font-black text-brand-main uppercase tracking-[4px] mb-8">Real-time Calc</p>
                                             <div className="flex items-start mb-10">
                                                 <span className="text-2xl font-light mt-2 mr-1 text-brand-lime">$</span>
                                                 <span className="text-8xl font-black tracking-tighter">{Math.ceil(currentPrice.total)}</span>
                                             </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between items-center text-xs opacity-60 font-bold uppercase"><span>Labor</span><span>${currentPrice.labor.toFixed(2)}</span></div>
-                                                <div className="flex justify-between items-center text-xs opacity-60 font-bold uppercase"><span>Products</span><span>${currentPrice.products.toFixed(2)}</span></div>
+                                            <div className="space-y-4 mb-4">
+                                                <div className="flex justify-between items-center text-xs opacity-60 font-bold uppercase">
+                                                    <span>Labor & Overhead</span>
+                                                    <span>${currentPrice.labor.toFixed(2)}</span>
+                                                </div>
+                                                <div className="flex justify-between items-center text-xs opacity-60 font-bold uppercase">
+                                                    <span>Product Cost</span>
+                                                    <span>${currentPrice.products.toFixed(2)}</span>
+                                                </div>
+                                                <div className="h-px bg-white/10"></div>
+                                                <div className="flex justify-between items-center text-sm font-black text-brand-lime uppercase">
+                                                    <span>Est. Net Profit</span>
+                                                    <span>${(Math.ceil(currentPrice.total) - (currentPrice.total - currentPrice.labor)).toFixed(2)}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -389,18 +504,33 @@
                             <div className="animate-fade-up max-w-2xl mx-auto">
                                 <div className="text-center mb-12">
                                     <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Your Menu</h2>
+                                    <p className="text-brand-main font-bold mt-2 uppercase tracking-widest text-xs">Ready for Booksy</p>
                                 </div>
-                                {savedServices.length === 0 ? <p className="text-center text-slate-400 uppercase text-xs">No services yet.</p> : (
+                                {savedServices.length === 0 ? (
+                                    <div className="bg-white p-20 rounded-[40px] text-center border-4 border-dashed border-slate-100">
+                                        <Icon name="clipboard-list" size={48} className="mx-auto text-slate-200 mb-4" />
+                                        <p className="text-slate-400 font-bold uppercase text-xs tracking-widest">No services created yet</p>
+                                        <button onClick={() => setActiveTab('builder')} className="mt-4 text-brand-main font-black uppercase text-xs hover:underline">Start Building</button>
+                                    </div>
+                                ) : (
                                     <div className="space-y-4">
                                         {savedServices.map(svc => (
                                             <div key={svc.id} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between group hover:border-brand-main transition-all">
                                                 <div>
-                                                    <h4 className="font-black text-brand-black uppercase text-lg">{svc.name}</h4>
-                                                    <p className="text-[10px] opacity-50">{svc.duration} min</p>
+                                                    <h4 className="font-black text-brand-black uppercase text-lg tracking-tight">{svc.name}</h4>
+                                                    <div className="flex gap-4 mt-1 opacity-50 text-[10px] font-bold uppercase">
+                                                        <span>{svc.duration} min</span>
+                                                        <span>{svc.selections.length} items</span>
+                                                    </div>
                                                 </div>
                                                 <div className="flex items-center gap-6">
-                                                    <p className="text-3xl font-black">${Math.ceil(svc.calculated.total)}</p>
-                                                    <button onClick={() => setSavedServices(savedServices.filter(s => s.id !== svc.id))} className="text-slate-200 hover:text-red-400"><Icon name="trash-2" size={20} /></button>
+                                                    <div className="text-right">
+                                                        <p className="text-[10px] font-black text-brand-main uppercase tracking-widest mb-1">Target Price</p>
+                                                        <p className="text-3xl font-black text-brand-black leading-none">${Math.ceil(svc.calculated.total)}</p>
+                                                    </div>
+                                                    <button onClick={() => setSavedServices(savedServices.filter(s => s.id !== svc.id))} className="text-slate-200 hover:text-red-400 transition-colors">
+                                                        <Icon name="trash-2" size={20} />
+                                                    </button>
                                                 </div>
                                             </div>
                                         ))}
@@ -410,10 +540,38 @@
                         )}
 
                         {activeTab === 'guide' && (
-                            <div className="animate-fade-up max-w-3xl mx-auto bg-white p-10 rounded-[40px]">
-                                <h2 className="text-3xl font-black mb-8 uppercase tracking-tighter">How it Works</h2>
-                                <p className="text-slate-500 mb-10">Set Goals, manage Stockroom, build services, and save your Menu.</p>
-                                <button onClick={() => { if(confirm('Clear all data?')) { localStorage.clear(); location.reload(); } }} className="text-red-400 text-[10px] font-bold uppercase tracking-widest hover:text-red-600">Reset Lab to Factory Settings</button>
+                            <div className="animate-fade-up max-w-3xl mx-auto bg-white p-10 rounded-[40px] shadow-sm border border-slate-100">
+                                <h2 className="text-3xl font-black text-brand-black mb-8 uppercase tracking-tighter">How it Works</h2>
+                                <div className="space-y-8">
+                                    <div className="flex gap-6">
+                                        <div className="w-10 h-10 rounded-full bg-brand-main text-white flex items-center justify-center font-black shrink-0">1</div>
+                                        <div>
+                                            <h4 className="font-black uppercase text-sm mb-1">Set Your Worth</h4>
+                                            <p className="text-slate-500 text-sm">Start in <b className="text-brand-black font-bold uppercase text-[12px]">Goals</b>. Tell the lab how much you want to take home per hour and list your fixed bills (rent, software, insurance). This creates your <b className="text-brand-main font-bold">Business Base Rate</b>.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-6">
+                                        <div className="w-10 h-10 rounded-full bg-brand-main text-white flex items-center justify-center font-black shrink-0">2</div>
+                                        <div>
+                                            <h4 className="font-black uppercase text-sm mb-1">Manage the Stockroom</h4>
+                                            <p className="text-slate-500 text-sm">List your wholesale inventory in the <b className="text-brand-black font-bold uppercase text-[12px]">Stockroom</b>. The lab calculates the cost of every unit of solution and every individual disposable item you use.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-6">
+                                        <div className="w-10 h-10 rounded-full bg-brand-main text-white flex items-center justify-center font-black shrink-0">3</div>
+                                        <div>
+                                            <h4 className="font-black uppercase text-sm mb-1">Engineer Services</h4>
+                                            <p className="text-slate-500 text-sm">In the <b className="text-brand-black font-bold uppercase text-[12px]">Builder</b>, select the specific items used for a service. The lab adds the labor time to the product cost to find your <b className="text-brand-main font-bold">Minimum Price</b>.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-6">
+                                        <div className="w-10 h-10 rounded-full bg-brand-main text-white flex items-center justify-center font-black shrink-0">4</div>
+                                        <div>
+                                            <h4 className="font-black uppercase text-sm mb-1">Review & Save</h4>
+                                            <p className="text-slate-500 text-sm">Save your engineered services to the <b className="text-brand-black font-bold uppercase text-[12px]">Menu</b>. If your costs go up later, update it once in Goals, and every service on your menu will update automatically!</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </main>
@@ -424,3 +582,6 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
+</body>
+</html>
+
