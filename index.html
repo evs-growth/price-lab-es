@@ -107,7 +107,7 @@
                             <Icon name="check" size={32} className="text-brand-main" />
                         </div>
                         <h3 className="text-2xl font-black text-brand-black uppercase tracking-tight mb-2">¡Servicio Guardado!</h3>
-                        <p className="text-slate-500 text-sm mb-8">Este servicio ha sido calculado y añadido a tu Menú de Precios.</p>
+                        <p className="text-slate-500 text-sm mb-8">Este servicio ha sido calculado y añadido a tu Lista de precios.</p>
                         <div className="space-y-3">
                             <button 
                                 onClick={onClose}
@@ -119,7 +119,7 @@
                                 onClick={onGoToMenu}
                                 className="w-full bg-brand-main text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-brand-black transition-colors"
                             >
-                                Ver Menú
+                                Ver Lista de precios
                             </button>
                         </div>
                     </div>
@@ -138,7 +138,7 @@
             const [weeklyHours, setWeeklyHours] = useState(getSaved('weeklyHours', 30));
             const [targetProfit, setTargetProfit] = useState(getSaved('targetProfit', 45));
             const [monthlyBills, setMonthlyBills] = useState(getSaved('monthlyBills', [
-                { id: 1, name: 'Alquiler / Cuota de Silla', amount: 600 },
+                { id: 1, name: 'Alquiler', amount: 600 },
                 { id: 2, name: 'Suscripción Booksy', amount: 30 },
                 { id: 3, name: 'Marketing y Seguro', amount: 80 }
             ]));
@@ -276,8 +276,8 @@
                     <nav className="max-w-5xl mx-auto p-4 flex gap-2 overflow-x-auto no-scrollbar">
                         <NavItem id="goal" label="1. Objetivos" icon="target" />
                         <NavItem id="inventory" label="2. Almacén" icon="package" />
-                        <NavItem id="builder" label="3. Constructor" icon="calculator" />
-                        <NavItem id="menu" label="4. Menú" icon="clipboard-list" />
+                        <NavItem id="builder" label="3. Creador" icon="calculator" />
+                        <NavItem id="menu" label="4. Lista de precios" icon="clipboard-list" />
                         <NavItem id="guide" label="Guía" icon="help-circle" />
                     </nav>
 
@@ -292,7 +292,7 @@
                                             <div className="space-y-2">
                                                 <label className="text-[11px] font-bold text-brand-main uppercase tracking-widest">Beneficio deseado por hora</label>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-2xl font-bold text-slate-300">$</span>
+                                                    <span className="text-2xl font-bold text-slate-300">€</span>
                                                     <input type="number" value={targetProfit} onChange={e => setTargetProfit(e.target.value === '' ? '' : Number(e.target.value))} className="editable-input w-full text-xl" />
                                                 </div>
                                             </div>
@@ -312,7 +312,7 @@
                                                 <div key={bill.id} className="flex gap-2 items-center">
                                                     <input value={bill.name} onChange={e => setMonthlyBills(monthlyBills.map(b => b.id === bill.id ? {...b, name: e.target.value} : b))} className="editable-input flex-1 text-sm" placeholder="Nombre del Gasto" />
                                                     <div className="w-32 relative">
-                                                        <span className="absolute left-3 top-2 text-xs text-slate-400">$</span>
+                                                        <span className="absolute left-3 top-2 text-xs text-slate-400">€</span>
                                                         <input type="number" value={bill.amount} onChange={e => setMonthlyBills(monthlyBills.map(b => b.id === bill.id ? {...b, amount: e.target.value === '' ? '' : Number(e.target.value)} : b))} className="editable-input w-full pl-6 text-sm text-right" />
                                                     </div>
                                                     <button 
@@ -326,7 +326,7 @@
                                         </div>
                                         <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
                                             <span className="text-xs font-bold text-slate-400 uppercase">Tarifa Base Calculada:</span>
-                                            <span className="text-xl font-black text-brand-black">${totalRequiredPerHour.toFixed(2)} /hr</span>
+                                            <span className="text-xl font-black text-brand-black">{totalRequiredPerHour.toFixed(2)} €/hr</span>
                                         </div>
                                     </div>
                                 </div>
@@ -339,7 +339,7 @@
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="bg-white p-8 rounded-[32px] border border-slate-100">
                                         <div className="flex justify-between items-center mb-6">
-                                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Icon name="flask-conical" className="text-brand-main"/> Líquidos y Soluciones</h3>
+                                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Icon name="flask-conical" className="text-brand-main"/> Productos</h3>
                                             <button onClick={() => handleAddItem('liquids')} className="text-xs font-bold text-brand-main hover:underline">+ AÑADIR</button>
                                         </div>
                                         <div className="space-y-4">
@@ -351,11 +351,11 @@
                                                     </div>
                                                     <div className="grid grid-cols-2 gap-2">
                                                         <div className="space-y-1">
-                                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Volumen (ml/oz)</label>
+                                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Volumen (ml)</label>
                                                             <input type="number" value={item.capacity} onChange={e => setInventory({...inventory, liquids: inventory.liquids.map(i => i.id === item.id ? {...i, capacity: e.target.value === '' ? '' : Number(e.target.value)} : i)})} className="editable-input w-full text-xs" />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Coste $</label>
+                                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Coste €</label>
                                                             <input type="number" value={item.price} onChange={e => setInventory({...inventory, liquids: inventory.liquids.map(i => i.id === item.id ? {...i, price: e.target.value === '' ? '' : Number(e.target.value)} : i)})} className="editable-input w-full text-xs" />
                                                         </div>
                                                     </div>
@@ -381,7 +381,7 @@
                                                             <input type="number" value={item.packSize} onChange={e => setInventory({...inventory, disposables: inventory.disposables.map(i => i.id === item.id ? {...i, packSize: e.target.value === '' ? '' : Number(e.target.value)} : i)})} className="editable-input w-full text-xs" />
                                                         </div>
                                                         <div className="space-y-1">
-                                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Coste $</label>
+                                                            <label className="text-[9px] font-bold text-slate-400 uppercase">Coste €</label>
                                                             <input type="number" value={item.price} onChange={e => setInventory({...inventory, disposables: inventory.disposables.map(i => i.id === item.id ? {...i, price: e.target.value === '' ? '' : Number(e.target.value)} : i)})} className="editable-input w-full text-xs" />
                                                         </div>
                                                     </div>
@@ -463,14 +463,14 @@
                                         <div className="flex items-center gap-6 p-6 bg-brand-gray/50 rounded-3xl border border-slate-100">
                                             <div className="flex-1">
                                                 <p className="text-[10px] font-black text-brand-main uppercase tracking-widest">Precio Sugerido</p>
-                                                <p className="text-4xl font-black text-brand-black">${Math.ceil(currentPrice.total)}</p>
+                                                <p className="text-4xl font-black text-brand-black">{Math.ceil(currentPrice.total)} €</p>
                                             </div>
                                             <button 
                                                 onClick={saveService}
                                                 disabled={!service.name || !service.duration}
                                                 className="bg-brand-main hover:bg-brand-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl transition-all disabled:opacity-30 flex items-center gap-2"
                                             >
-                                                <Icon name="plus-circle" size={16} /> Añadir al Menú
+                                                <Icon name="plus-circle" size={16} /> Añadir a la Lista
                                             </button>
                                         </div>
                                     </div>
@@ -481,7 +481,7 @@
                                             onClick={() => handleForwardNav('menu')}
                                             className="text-brand-main font-black uppercase text-xs tracking-widest flex items-center gap-2"
                                         >
-                                            Ir al Menú de Precios <Icon name="arrow-right" size={14} />
+                                            Ir a la Lista de precios <Icon name="arrow-right" size={14} />
                                         </button>
                                     </div>
                                 </div>
@@ -492,22 +492,22 @@
                                         <div className="relative">
                                             <p className="text-[10px] font-black text-brand-main uppercase tracking-[4px] mb-8">Cálculo en Tiempo Real</p>
                                             <div className="flex items-start mb-10">
-                                                <span className="text-2xl font-light mt-2 mr-1 text-brand-lime">$</span>
                                                 <span className="text-8xl font-black tracking-tighter">{Math.ceil(currentPrice.total)}</span>
+                                                <span className="text-2xl font-light mt-2 ml-1 text-brand-lime">€</span>
                                             </div>
                                             <div className="space-y-4 mb-4">
                                                 <div className="flex justify-between items-center text-xs opacity-60 font-bold uppercase">
                                                     <span>Mano de Obra y Gastos</span>
-                                                    <span>${currentPrice.labor.toFixed(2)}</span>
+                                                    <span>{currentPrice.labor.toFixed(2)} €</span>
                                                 </div>
                                                 <div className="flex justify-between items-center text-xs opacity-60 font-bold uppercase">
                                                     <span>Coste de Productos</span>
-                                                    <span>${currentPrice.products.toFixed(2)}</span>
+                                                    <span>{currentPrice.products.toFixed(2)} €</span>
                                                 </div>
                                                 <div className="h-px bg-white/10"></div>
                                                 <div className="flex justify-between items-center text-sm font-black text-brand-lime uppercase">
                                                     <span>Beneficio Neto Est.</span>
-                                                    <span>${(Math.ceil(currentPrice.total) - (currentPrice.total - currentPrice.labor)).toFixed(2)}</span>
+                                                    <span>{(Math.ceil(currentPrice.total) - (currentPrice.total - currentPrice.labor)).toFixed(2)} €</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -519,7 +519,7 @@
                         {activeTab === 'menu' && (
                             <div className="animate-fade-up max-w-2xl mx-auto">
                                 <div className="text-center mb-12">
-                                    <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Tu Menú</h2>
+                                    <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Tu Lista de precios</h2>
                                     <p className="text-brand-main font-bold mt-2 uppercase tracking-widest text-xs">Listo para Booksy</p>
                                 </div>
                                 {savedServices.length === 0 ? (
@@ -541,8 +541,8 @@
                                                 </div>
                                                 <div className="flex items-center gap-6">
                                                     <div className="text-right">
-                                                        <p className="text-[10px] font-black text-brand-main uppercase tracking-widest mb-1">Precio Objetivo</p>
-                                                        <p className="text-3xl font-black text-brand-black leading-none">${Math.ceil(svc.calculated.total)}</p>
+                                                        <p className="text-[10px] font-black text-brand-main uppercase tracking-widest mb-1">Precio mínimo</p>
+                                                        <p className="text-3xl font-black text-brand-black leading-none">{Math.ceil(svc.calculated.total)} €</p>
                                                     </div>
                                                     <button onClick={() => setSavedServices(savedServices.filter(s => s.id !== svc.id))} className="text-slate-200 hover:text-red-400 transition-colors">
                                                         <Icon name="trash-2" size={20} />
@@ -577,14 +577,14 @@
                                         <div className="w-10 h-10 rounded-full bg-brand-main text-white flex items-center justify-center font-black shrink-0">3</div>
                                         <div>
                                             <h4 className="font-black uppercase text-sm mb-1">Ingeniería de Servicios</h4>
-                                            <p className="text-slate-500 text-sm">En el <b className="text-brand-black font-bold uppercase text-[12px]">Constructor</b>, elige los artículos usados en un servicio. El laboratorio suma el tiempo de trabajo al coste de producto para hallar tu <b className="text-brand-main font-bold">Precio Mínimo</b>.</p>
+                                            <p className="text-slate-500 text-sm">En el <b className="text-brand-black font-bold uppercase text-[12px]">Creador</b>, elige los artículos usados en un servicio. El laboratorio suma el tiempo de trabajo al coste de producto para hallar tu <b className="text-brand-main font-bold">Precio Mínimo</b>.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-6">
                                         <div className="w-10 h-10 rounded-full bg-brand-main text-white flex items-center justify-center font-black shrink-0">4</div>
                                         <div>
                                             <h4 className="font-black uppercase text-sm mb-1">Revisa y Guarda</h4>
-                                            <p className="text-slate-500 text-sm">Guarda tus servicios en el <b className="text-brand-black font-bold uppercase text-[12px]">Menú</b>. Si tus costes suben, actualízalos una vez en Objetivos y todo tu menú se actualizará automáticamente.</p>
+                                            <p className="text-slate-500 text-sm">Guarda tus servicios en la <b className="text-brand-black font-bold uppercase text-[12px]">Lista de precios</b>. Si tus costes suben, actualízalos una vez en Objetivos y todo se actualizará automáticamente.</p>
                                         </div>
                                     </div>
                                 </div>
