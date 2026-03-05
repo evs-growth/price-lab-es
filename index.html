@@ -174,12 +174,7 @@
             return () => observer.disconnect();
         }, [activeTab, weeklyHours, targetProfit, monthlyBills, inventory, service, savedServices]);
 
-            // --- SCROLL TO TOP ON TAB CHANGE ---
-useEffect(() => {
-    // This tells the website "The user changed tabs, move the screen up"
-    window.parent.postMessage({ 'type': 'iframe-scroll-top' }, "*");
-}, [activeTab]);
-
+          
            // --- AUTO-SAVE TO LOCALSTORAGE ---
             useEffect(() => {
                 localStorage.setItem('weeklyHours', JSON.stringify(weeklyHours));
@@ -257,16 +252,21 @@ useEffect(() => {
                 </button>
             );
 
-            const NextButton = ({ target, label = "Continue" }) => (
-                <div className="mt-12 flex justify-end">
-                    <button 
-                        onClick={() => setActiveTab(target)}
-                        className="bg-brand-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center gap-3 hover:bg-brand-main transition-colors shadow-lg group"
-                    >
-                        {label} <Icon name="arrow-right" size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                </div>
-            );
+const NextButton = ({ target, label = "Continue" }) => (
+    <div className="mt-12 flex justify-end">
+        <button 
+            onClick={() => {
+                // Change the tab
+                setActiveTab(target);
+                // Send the scroll message ONLY when this button is clicked
+                window.parent.postMessage({ 'type': 'iframe-scroll-top' }, "*");
+            }} 
+            className="bg-brand-black text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest flex items-center gap-3 hover:bg-brand-main transition-colors shadow-lg group"
+        >
+            {label} <Icon name="arrow-right" size={16} className="group-hover:translate-x-1 transition-transform" />
+        </button>
+    </div>
+);
 
             return (
                 <div className="min-h-screen pt-4">
@@ -603,6 +603,7 @@ useEffect(() => {
     </script>
 </body>
 </html>
+
 
 
 
