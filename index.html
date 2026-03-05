@@ -178,6 +178,15 @@
 useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }, [activeTab]);
+
+           // --- AUTO-SAVE TO LOCALSTORAGE ---
+            useEffect(() => {
+                localStorage.setItem('weeklyHours', JSON.stringify(weeklyHours));
+                localStorage.setItem('targetProfit', JSON.stringify(targetProfit));
+                localStorage.setItem('monthlyBills', JSON.stringify(monthlyBills));
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                localStorage.setItem('savedServices', JSON.stringify(savedServices));
+            }, [weeklyHours, targetProfit, monthlyBills, inventory, savedServices]);
 // -----------------------------------
         // ---------------------------
             const totalBills = monthlyBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
@@ -593,5 +602,6 @@ useEffect(() => {
     </script>
 </body>
 </html>
+
 
 
