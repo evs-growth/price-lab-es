@@ -149,7 +149,22 @@
                 ]
             });
             const [savedServices, setSavedServices] = useState([]);
+// --- IFRAME RESIZE CODE ---
+        useEffect(() => {
+            const sendHeight = () => {
+                const height = document.documentElement.scrollHeight;
+                window.parent.postMessage({ 'type': 'iframe-resize', 'height': height }, "*");
+            };
 
+            const observer = new ResizeObserver(() => {
+                sendHeight();
+            });
+
+            observer.observe(document.body);
+            sendHeight();
+            return () => observer.disconnect();
+        }, [activeTab, weeklyHours, targetProfit, monthlyBills, inventory, service, savedServices]);
+        // ---------------------------
             const totalBills = monthlyBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
             const monthlyWorkHours = (Number(weeklyHours) || 1) * 4.33;
             const billCostPerHour = totalBills / (monthlyWorkHours || 1);
@@ -563,3 +578,4 @@
     </script>
 </body>
 </html>
+
