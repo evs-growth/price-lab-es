@@ -176,7 +176,8 @@
 
             // --- SCROLL TO TOP ON TAB CHANGE ---
 useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // This tells the website "The user changed tabs, move the screen up"
+    window.parent.postMessage({ 'type': 'iframe-scroll-top' }, "*");
 }, [activeTab]);
 
            // --- AUTO-SAVE TO LOCALSTORAGE ---
@@ -602,6 +603,7 @@ useEffect(() => {
     </script>
 </body>
 </html>
+
 
 
 
