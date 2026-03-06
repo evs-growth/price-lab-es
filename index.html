@@ -240,11 +240,19 @@
                 });
             };
 
-            const saveService = () => {
-                setSavedServices([...savedServices, {...service, id: Date.now(), calculated: currentPrice}]);
-                setIsSavedModalOpen(true);
-                setService(DEFAULT_SERVICE);
-            };
+const saveService = () => {
+    // 1. Save the data
+    setSavedServices([...savedServices, {...service, id: Date.now(), calculated: currentPrice}]);
+    
+    // 2. Open the modal
+    setIsSavedModalOpen(true);
+    
+    // 3. Tell the parent window to scroll to the top
+    window.parent.postMessage({ 'type': 'iframe-scroll-top' }, "*");
+    
+    // 4. Reset the service builder
+    setService(DEFAULT_SERVICE);
+};
 
             const NavItem = ({ id, label, icon }) => (
                 <button 
@@ -628,4 +636,5 @@ const unit = liquidItem ? 'ml' : 'pcs';
     </script>
 </body>
 </html>
+
 
