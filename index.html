@@ -220,8 +220,8 @@
     // We create a unique ID and a specific object based on the category
     const id = Date.now().toString();
     const newItem = cat === 'liquids' 
-        ? { id, name: 'New Liquid Product', capacity: 1000, price: 0 } 
-        : { id, name: 'New Disposable Item', packSize: 1, price: 0 };
+        ? { id, name: 'Nuevo Producto Líquido', capacity: 1000, price: 0 } 
+        : { id, name: 'Nuevo Producto Desechable', packSize: 1, price: 0 };
 
     setInventory({ ...inventory, [cat]: [...inventory[cat], newItem] });
 };
@@ -642,6 +642,7 @@ const unit = liquidItem ? 'ml' : 'pcs';
     </script>
 </body>
 </html>
+
 
 
 
