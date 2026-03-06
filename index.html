@@ -142,10 +142,10 @@
             const [activeTab, setActiveTab] = useState('goal');
             
             const [weeklyHours, setWeeklyHours] = useState(getSaved('weeklyHours', 30));
-            const [targetProfit, setTargetProfit] = useState(getSaved('targetProfit', 45));
+            const [targetProfit, setTargetProfit] = useState(getSaved('targetProfit', 20));
             const [monthlyBills, setMonthlyBills] = useState(getSaved('monthlyBills', [
                 { id: 1, name: 'Alquiler', amount: 600 },
-                { id: 2, name: 'Suscripción Booksy', amount: 30 },
+                { id: 2, name: 'Internet y otros servicios', amount: 30 },
                 { id: 3, name: 'Marketing y Seguro', amount: 80 }
             ]));
             const [inventory, setInventory] = useState(getSaved('inventory', INITIAL_INVENTORY));
@@ -375,7 +375,7 @@ const saveService = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="bg-white p-8 rounded-[32px] border border-slate-100">
                                         <div className="flex justify-between items-center mb-6">
-                                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Icon name="flask-conical" className="text-brand-main"/> Productos</h3>
+                                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Icon name="flask-conical" className="text-brand-main"/> Productos Líquidos (ML.)</h3>
                                             <button onClick={() => handleAddItem('liquids')} className="text-xs font-bold text-brand-main hover:underline">+ AÑADIR</button>
                                         </div>
                                         <div className="space-y-4">
@@ -401,7 +401,7 @@ const saveService = () => {
                                     </div>
                                     <div className="bg-white p-8 rounded-[32px] border border-slate-100">
                                         <div className="flex justify-between items-center mb-6">
-                                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Icon name="layers" className="text-brand-main"/> Desechables</h3>
+                                            <h3 className="text-xl font-black uppercase tracking-tight flex items-center gap-2"><Icon name="layers" className="text-brand-main"/> Productos Desechables (Unidades)(</h3>
                                             <button onClick={() => handleAddItem('disposables')} className="text-xs font-bold text-brand-main hover:underline">+ AÑADIR</button>
                                         </div>
                                         <div className="space-y-4">
@@ -434,7 +434,7 @@ const saveService = () => {
                             <div className="animate-fade-up grid grid-cols-1 lg:grid-cols-3 gap-8">
                                 <div className="lg:col-span-2 space-y-6">
                                     <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
-                                        <h2 className="text-2xl font-black uppercase tracking-tight mb-6">Ingeniería de Servicio</h2>
+                                        <h2 className="text-2xl font-black uppercase tracking-tight mb-6">Configuración de Servicio</h2>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
                                                 <label className="text-[11px] font-bold text-brand-main uppercase">Nombre del Servicio</label>
@@ -479,7 +479,7 @@ const item = liquidItem || disposableItem;
 if (!item) return null;
 
 // If we found it in the 'liquids' list, use ml. Otherwise, use pcs.
-const unit = liquidItem ? 'ml' : 'pcs';
+const unit = liquidItem ? 'ml' : 'uds';
                                                     return (
                                                         <div key={sel.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                                                             <span className="text-sm font-bold text-brand-black">{item.name}</span>
@@ -518,7 +518,7 @@ const unit = liquidItem ? 'ml' : 'pcs';
                                     </div>
                                     
                                     <div className="mt-8 pt-4 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
-                                        <p className="text-xs font-medium italic">¿Ya terminaste? Mira tus resultados.</p>
+                                        <p className="text-xs font-medium italic">¿Ya has terminado? Mira tus resultados.</p>
                                         <button 
                                             onClick={() => handleForwardNav('menu')}
                                             className="text-brand-main font-black uppercase text-xs tracking-widest flex items-center gap-2"
@@ -562,7 +562,7 @@ const unit = liquidItem ? 'ml' : 'pcs';
                             <div className="animate-fade-up max-w-2xl mx-auto">
                                 <div className="text-center mb-12">
                                     <h2 className="text-4xl font-black text-brand-black uppercase tracking-tighter">Tu Lista de precios</h2>
-                                    <p className="text-brand-main font-bold mt-2 uppercase tracking-widest text-xs">Listo para Booksy</p>
+                                    <p className="text-brand-main font-bold mt-2 uppercase tracking-widest text-xs">Listo para actualizar tus precios</p>
                                 </div>
                                 {savedServices.length === 0 ? (
                                     <div className="bg-white p-20 rounded-[40px] text-center border-4 border-dashed border-slate-100">
@@ -618,7 +618,7 @@ const unit = liquidItem ? 'ml' : 'pcs';
                                     <div className="flex gap-6">
                                         <div className="w-10 h-10 rounded-full bg-brand-main text-white flex items-center justify-center font-black shrink-0">3</div>
                                         <div>
-                                            <h4 className="font-black uppercase text-sm mb-1">Ingeniería de Servicios</h4>
+                                            <h4 className="font-black uppercase text-sm mb-1">Configuración de Servicios</h4>
                                             <p className="text-slate-500 text-sm">En el <b className="text-brand-black font-bold uppercase text-[12px]">Creador</b>, elige los artículos usados en un servicio. El laboratorio suma el tiempo de trabajo al coste de producto para hallar tu <b className="text-brand-main font-bold">Precio Mínimo</b>.</p>
                                         </div>
                                     </div>
@@ -642,6 +642,7 @@ const unit = liquidItem ? 'ml' : 'pcs';
     </script>
 </body>
 </html>
+
 
 
 
