@@ -101,8 +101,8 @@
         const Modal = ({ isOpen, onClose, onGoToMenu }) => {
             if (!isOpen) return null;
             return (
-                <div className="fixed inset-0 z-[100] modal-overlay flex items-center justify-center p-4">
-                    <div className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-fade-up text-center">
+                <div className="absolute inset-0 z-[100] modal-overlay flex items-center justify-center p-4 rounded-[32px]">
+            <div className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-fade-up text-center border border-slate-100">
                         <div className="w-16 h-16 bg-brand-lime rounded-full flex items-center justify-center mx-auto mb-6">
                             <Icon name="check" size={32} className="text-brand-main" />
                         </div>
@@ -274,12 +274,7 @@
 
             return (
                 <div className="min-h-screen pt-4">
-                    <Modal 
-                        isOpen={isSavedModalOpen} 
-                        onClose={() => setIsSavedModalOpen(false)} 
-                        onGoToMenu={() => { setIsSavedModalOpen(false); handleForwardNav('menu'); }} 
-                    />
-
+                    
                     <nav className="max-w-5xl mx-auto p-4 flex gap-2 overflow-x-auto no-scrollbar">
                         <NavItem id="goal" label="1. Objetivos" icon="target" />
                         <NavItem id="inventory" label="2. Almacén" icon="package" />
@@ -485,8 +480,13 @@ const unit = liquidItem ? 'ml' : 'pcs';
                                         </div>
                                     </div>
 
-                                    <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100">
-                                        <h3 className="text-lg font-black uppercase tracking-tight mb-4">Paso C: Finalizar</h3>
+<div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 relative">
+    <Modal 
+        isOpen={isSavedModalOpen} 
+        onClose={() => setIsSavedModalOpen(false)} 
+        onGoToMenu={() => { setIsSavedModalOpen(false); handleForwardNav('menu'); }} 
+    />
+    <h3 className="text-lg font-black uppercase tracking-tight mb-4">Paso C: Finalizar</h3>
                                         <p className="text-sm text-slate-500 mb-6">Revisa tu precio de referencia calculado y guárdalo en tu lista maestra.</p>
                                         <div className="flex items-center gap-6 p-6 bg-brand-gray/50 rounded-3xl border border-slate-100">
                                             <div className="flex-1">
@@ -628,5 +628,6 @@ const unit = liquidItem ? 'ml' : 'pcs';
     </script>
 </body>
 </html>
+
 
 
