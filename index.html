@@ -134,9 +134,10 @@
 };
 
        const App = () => {
+           const PREFIX = "es_es_";
             const getSaved = (key, fallback) => {
-                const saved = localStorage.getItem(key);
-                return saved ? JSON.parse(saved) : fallback;
+        const saved = localStorage.getItem(PREFIX + key); 
+        return saved ? JSON.parse(saved) : fallback;
             };
 
             const [activeTab, setActiveTab] = useState('goal');
@@ -178,12 +179,12 @@
         }, [activeTab, weeklyHours, targetProfit, monthlyBills, inventory, service, savedServices]);
 
             useEffect(() => {
-                localStorage.setItem('weeklyHours', JSON.stringify(weeklyHours));
-                localStorage.setItem('targetProfit', JSON.stringify(targetProfit));
-                localStorage.setItem('monthlyBills', JSON.stringify(monthlyBills));
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                localStorage.setItem('savedServices', JSON.stringify(savedServices));
-            }, [weeklyHours, targetProfit, monthlyBills, inventory, savedServices]);
+        localStorage.setItem(PREFIX + 'weeklyHours', JSON.stringify(weeklyHours));
+        localStorage.setItem(PREFIX + 'targetProfit', JSON.stringify(targetProfit));
+        localStorage.setItem(PREFIX + 'monthlyBills', JSON.stringify(monthlyBills));
+        localStorage.setItem(PREFIX + 'inventory', JSON.stringify(inventory));
+        localStorage.setItem(PREFIX + 'savedServices', JSON.stringify(savedServices));
+    }, [weeklyHours, targetProfit, monthlyBills, inventory, savedServices]);
 
         const handleForwardNav = (target) => {
             setActiveTab(target);
